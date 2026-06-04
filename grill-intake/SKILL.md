@@ -5,9 +5,11 @@ description: "새 작업/프로젝트가 생겼을 때 harness 배치를 결정�
 
 # Grill Intake
 
-새 작업 또는 프로젝트가 생겼을 때, **기존 harness에 sub-epic으로 넣을지 vs. 새 harness를 신설할지** 결정하는 스킬.
+새 작업 또는 프로젝트가 생겼을 때, **기존 그룹에 묶을지 vs. 새 그룹(harness)을 만들지** 결정하는 스킬.
 
 질문은 한 번에 하나만 한다. 사용자의 답을 받은 뒤 다음으로 넘어간다.
+
+**쉬운말 원칙** (grill-* 패밀리 공통): 데이비드에게 물을 때 "harness / sub-epic / Iron Laws / 카운터파티" 같은 내부 용어를 그대로 쓰지 말고 풀어서 말한다 — "기존 그룹 안에 넣을까요, 새 그룹으로 뺄까요?", "꼭 지켜야 할 별도 규칙이 필요한가요?" 등. 내부 용어는 파일·구조 결정에만 쓴다.
 
 ---
 
@@ -44,7 +46,7 @@ description: "새 작업/프로젝트가 생겼을 때 harness 배치를 결정�
 
 #### Q2. (기존 harness 겹침 시) 독립 운영이 필요한가?
 
-> "이 작업이 [겹치는 harness]의 범위 안에서 처리되나요, 아니면 독립적인 카운터파티·계약·Iron Law가 필요한가요?"
+> "이 작업이 [겹치는 그룹]의 범위 안에서 처리되나요, 아니면 별도의 상대방·계약·꼭 지켜야 할 규칙(Iron Laws)이 필요한가요?"
 
 - 범위 안에서 처리 → sub-epic 추천
 - 독립 필요 → 새 harness 신설 추천
@@ -90,11 +92,13 @@ description: "새 작업/프로젝트가 생겼을 때 harness 배치를 결정�
 
 다음 액션:
 1. harnesses/[이름]/ 폴더 생성
-2. CLAUDE.md, CONTEXT.md, STATUS.md, docs/adr/ 초기화
+2. **grill-setup으로 전체 구조 초기화** (CLAUDE.md의 `## Agent skills`/`## Iron Laws`, CONTEXT.md, STATUS.md, docs/agents/·adr/·knowledge/, 도메인 레시피 파일 등 — 개별 나열 대신 grill-setup이 일괄 생성)
 3. 루트 CLAUDE.md Harness 인덱스에 추가
 
 grill-setup으로 폴더 구조를 자동 생성할까요?
 ```
+
+> 초기화 파일 목록은 grill-setup이 단일 출처(source of truth)다. 여기서 일부만 나열해 grill-setup과 어긋나지 않게, 항상 grill-setup에 위임한다.
 
 ---
 
@@ -129,9 +133,9 @@ grill-setup으로 폴더 구조를 자동 생성할까요?
 
 배치가 결정되면:
 
-> "배치 완료. 이 작업의 핵심 용어나 결정 사항을 CONTEXT.md에 초기 박제할까요? (grill-knowledge 심층 인터뷰 시작)"
+> "배치 완료. 이 작업의 핵심 용어나 결정 사항을 초기 정리할까요? (grill-knowledge 심층 인터뷰 시작)"
 
-사용자가 원하면 grill-knowledge 모드 2(심층 인터뷰)로 전환.
+사용자가 원하면 grill-knowledge 모드 2(심층 인터뷰)로 전환. 새 harness를 grill-setup으로 만든 경우, grill-knowledge는 `docs/agents/domain.md`(도메인·그룹 축·히스토리 위치·데이터 소스)를 먼저 읽고, 셋업 때 미뤄둔 "초기 ingest 예정"이 있으면 실행을 제안한다.
 
 ---
 
@@ -139,9 +143,9 @@ grill-setup으로 폴더 구조를 자동 생성할까요?
 
 | 조건 | 추천 |
 |---|---|
-| 기존 harness 책임과 명확히 겹침 + 독립 Iron Law 불필요 + 일회성 아님 | 기존 harness sub-epic |
-| 기존 harness 책임과 명확히 겹침 + 독립 Iron Law 불필요 + 일회성 | 기존 harness 임시 sub-epic (만료 일자 명시) |
+| 기존 harness 책임과 명확히 겹침 + 독립 Iron Laws 불필요 + 일회성 아님 | 기존 harness sub-epic |
+| 기존 harness 책임과 명확히 겹침 + 독립 Iron Laws 불필요 + 일회성 | 기존 harness 임시 sub-epic (만료 일자 명시) |
 | 기존 harness 없음 또는 두 개 이상 걸침 | 새 harness 신설 |
 | 기존 harness 겹침 + 독립 카운터파티/계약 존재 | 새 harness 신설 |
-| 기존 harness 겹침 + 독립 Iron Law 필요 | 새 harness 신설 |
+| 기존 harness 겹침 + 독립 Iron Laws 필요 | 새 harness 신설 |
 | 규모가 매우 작고 단발성 (3회 이하 작업) | 기존 가장 가까운 harness의 임시 항목 |

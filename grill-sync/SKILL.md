@@ -134,10 +134,16 @@ shareholders 전용. 주주별 현황 테이블의 해당 행을 업데이트한
 
 ### STATUS.md
 
-날짜가 박힌 휘발성 상태만 업데이트한다. 형식:
+날짜가 박힌 휘발성 상태(지금 상태)만 업데이트한다. 형식:
 ```
 [YYYY-MM-DD] [변경 내용]
 ```
+
+grill-setup이 만든 STATUS.md는 `목표 / 핵심 마감 / 현재 상태 / 다음 액션 / 미해결 사항` 섹션을 가진다. 변경은 `현재 상태`에, cross-cutting 이슈는 `미해결 사항`에 박는다. 해당 섹션이 없으면 만든다.
+
+### history 파일 (히스토리를 쌓는 프로젝트)
+
+`docs/agents/domain.md`에 히스토리 위치가 정의돼 있으면(루트 `history/<YYYY-MM>.md` / `<group>/history/` / `docs/knowledge/history*`), 지나간 사건·지표·결정은 STATUS.md(지금 상태)가 아니라 **해당 월 history 파일에 append**한다. 과거 항목은 보존. 같은 변경이 "지금 상태"이면서 "기록"이기도 하면 둘 다 갱신한다.
 
 ---
 

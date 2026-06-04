@@ -7,13 +7,17 @@ description: "데이비드의 계획/결정/문서를 집요하게 인터뷰하�
 
 데이비드의 계획·결정·문서를 끝장날 때까지 인터뷰하고, 그 자리에서 4개 위치에 박는다.
 
-**핵심 위치**:
+**핵심 위치** (grill-setup이 스캐폴딩하는 4개 위치와 동일):
 - `CONTEXT.md` — 시간 안 타는 도메인 사실, 용어 사전
 - `docs/adr/` — 결정성 변경 (세 조건 통과 시만)
 - `STATUS.md` — 휘발성 상태 (날짜 박힘)
-- `CLAUDE.md`의 Iron Law 섹션 — 강제 룰 (1~2주 검증 후 승격)
+- `CLAUDE.md`의 `## Iron Laws` 섹션 — 강제 룰 (1~2주 검증 후 승격)
+
+**히스토리를 쌓는 프로젝트면 5번째 위치**: grill-setup에서 "히스토리를 쌓는다"고 정한 경우, 사건·지표·결정의 누적 기록은 그때 고른 위치(루트 `history/<YYYY-MM>.md` / 서브 그룹 안 `<group>/history/` / `docs/knowledge/` 밑)에 월별로 append한다. 어디인지는 `docs/agents/domain.md`에 적혀 있다.
 
 **질문은 한 번에 하나만** 한다. 사용자의 답을 받은 뒤 다음 질문으로 넘어간다. 절대 한꺼번에 던지지 말 것.
+
+**쉬운말 원칙** (grill-setup과 동일): 데이비드에게 물을 때 파일명(`campaign-history.md`)·영어 약어(ROAS, ADR)·내부 용어(컨텍스트/ingest/harness)를 그대로 쓰지 말고 풀어서 말한다. 파일명·필드명은 내부적으로만 쓴다.
 
 질문이 기존 문서·노션·메일에서 답을 얻을 수 있는 거면, 사용자에게 묻지 말고 직접 탐색한다.
 
@@ -37,9 +41,11 @@ description: "데이비드의 계획/결정/문서를 집요하게 인터뷰하�
 
 세션 시작 시 (새 대화가 열리거나 첫 번째 harness 작업 시작 시):
 
-1. `comms/_archive/_pending_capture_*.md` 또는 `.pending/_capture_*.md` 존재 여부 확인
-2. 있으면 즉시 펼침 제안: "이전 세션에서 미처리된 박제 후보 N건이 있습니다. 지금 처리할까요?"
-3. STATUS.md의 "미해결 사항" 확인 — cross-cutting 이슈가 있으면 언급
+1. `docs/agents/domain.md` 확인 — grill-setup이 정한 도메인·그룹 축·히스토리 위치·데이터 소스를 먼저 읽어 이 프로젝트 구조를 파악한다 (없으면 grill-setup 미실행 — 패턴 인식으로 대체).
+2. `comms/_archive/_pending_capture_*.md` 또는 `.pending/_capture_*.md` 존재 여부 확인
+3. 있으면 즉시 펼침 제안: "이전 세션에서 미처리된 박제 후보 N건이 있습니다. 지금 처리할까요?"
+4. STATUS.md의 "미해결 사항" 확인 — cross-cutting 이슈가 있으면 언급
+5. `domain.md`의 `## 데이터 소스`에 "초기 ingest 예정: [소스]"가 남아 있으면 제안: "셋업 때 미뤄둔 [소스] 자료 가져오기가 있습니다. 지금 가져올까요?" (수락 시 grill-setup 섹션 E의 ingest 절차로 실행)
 
 ---
 
@@ -106,6 +112,10 @@ description: "데이비드의 계획/결정/문서를 집요하게 인터뷰하�
 ## Domain awareness — 어디를 봐야 하는가
 
 인터뷰 시작 전 다음을 탐색해서 도메인을 파악한다.
+
+### 0순위 — `docs/agents/domain.md`부터 읽기
+
+grill-setup을 거친 프로젝트는 `docs/agents/domain.md`에 도메인 종류·그룹 축(단일/트랙별/채널별/시간별)·히스토리 위치·데이터 소스가 이미 박혀 있다. **패턴을 추측하기 전에 이 파일을 먼저 읽어** 구조를 확정한다. 있으면 아래 패턴 인식은 생략 가능. 없으면 grill-setup 미실행으로 보고 패턴 인식으로 넘어간다.
 
 ### 파일 구조 — 3가지 패턴 인식
 
@@ -191,9 +201,14 @@ shareholders harness만의 특수성: `per-holder/<주주>.md` + `CONTEXT.md` �
 │   ├─ 한 harness 상태 → harness/STATUS.md
 │   └─ cross-cutting → 루트 STATUS.md
 │
+├─ 지나간 사건/지표 기록 (히스토리를 쌓는 프로젝트)?
+│   └─ domain.md에 적힌 히스토리 위치의 해당 월 파일에 append
+│       (루트 history/<YYYY-MM>.md / <group>/history/<YYYY-MM>.md / docs/knowledge/history*)
+│   * STATUS.md(지금 상태)와 구분: 히스토리는 "그때 있었던 일"을 날짜별로 누적, 과거 항목은 보존
+│
 ├─ 룰 후보 (반복 가능한 강제 규칙)?
 │   ├─ 1회성 표명 → ADR 초안만
-│   └─ 2회 이상 반복 또는 위반 발생 → Iron Law 승격
+│   └─ 2회 이상 반복 또는 위반 발생 → Iron Laws 승격
 │
 └─ 주주별 정보 (shareholders harness 전용)?
     └─ per-holder/<주주>.md + CONTEXT.md 매트릭스 + STATUS.md 3곳
@@ -236,9 +251,12 @@ shareholders harness만의 특수성: `per-holder/<주주>.md` + `CONTEXT.md` �
 #### 박제 위치 가이드
 
 - **CONTEXT.md**: 도메인 전문가에게 의미 있는 용어·사실만. 구현 디테일·파일 위치 등은 `docs/agents/` 또는 `docs/knowledge/`로.
-- **STATUS.md**: 날짜 박힌 휘발성 — "오늘 X 완료", "이번 주 Y 진행", "현재 마진 +N주" 같이 다음 주면 바뀔 정보.
+- **STATUS.md**: 날짜 박힌 휘발성 — "오늘 X 완료", "이번 주 Y 진행", "현재 마진 +N주" 같이 다음 주면 바뀔 정보 (지금 상태).
+- **history 파일** (히스토리를 쌓는 프로젝트): 지나간 사건·지표·결정의 누적 기록. domain.md의 히스토리 위치에서 해당 월 파일에 append, 과거 항목 보존. STATUS는 "지금", history는 "그때"로 구분.
 - **docs/adr/**: 세 조건 게이트 통과한 결정만. 작은 결정·명백한 결정·임시 결정은 노션·메모로.
-- **Iron Law (harness/CLAUDE.md)**: 1회성 룰은 안 박음. 2회 이상 반복 또는 위반 발생 시 승격.
+- **Iron Laws (CLAUDE.md `## Iron Laws`)**: 1회성 룰은 안 박음. 2회 이상 반복 또는 위반 발생 시 승격.
+
+> **STATUS.md 섹션 정합 (grill-setup 골격)**: grill-setup이 만든 STATUS.md는 `목표 / 핵심 마감 / 현재 상태 / 다음 액션` 섹션을 가진다. 휘발성 갱신은 `현재 상태` / `다음 액션`에, cross-cutting 이슈는 `미해결 사항`에 박는다. `미해결 사항` 섹션이 없으면 만들어서 박는다.
 
 ### 6. ADR 세 조건 게이트
 
@@ -261,7 +279,7 @@ ADR로 박힌 결정 중 "**반드시·절대·금지**" 표현이 있고 다음
 - 룰을 어겼을 때 실제 손해 발생한 위반 사례 있음
 - 사용자가 명시적으로 "이건 Iron Law로"라고 지명
 
-승격 시 해당 harness `CLAUDE.md`의 `## Iron Law` 섹션에 표준 형식으로 박음 + 트리거·체크 질문·위반 시 액션 묶음으로 정의.
+승격 시 해당 harness `CLAUDE.md`의 `## Iron Laws` 섹션에 표준 형식으로 박음 + 트리거·체크 질문·위반 시 액션 묶음으로 정의.
 
 ### 8. per-holder 동기화 강제 (shareholders 전용, IL-3)
 
@@ -315,7 +333,7 @@ WWG 최대주주 마진 자동 재계산: 갱신 후 WWG 총 취득 - UTC 합산
 
 grill-knowledge로 박은 결정·룰이 Iron Law로 승격될 때:
 
-1. 해당 harness `CLAUDE.md`의 `## Iron Law` 섹션에 표준 형식으로 박음
+1. 해당 harness `CLAUDE.md`의 `## Iron Laws` 섹션에 표준 형식으로 박음
 2. 근거 ADR 명시
 3. 트리거 / 체크 질문 / 위반 시 액션 정의
 4. 위반 사례 누적 표 비워두기

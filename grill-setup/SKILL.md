@@ -459,6 +459,10 @@ description: "데이비드의 프로젝트 폴더에 CLAUDE.md, CONTEXT.md, STAT
 ## 다음 액션
 
 (비어 있음)
+
+## 미해결 사항
+
+(비어 있음 — cross-cutting 이슈나 보류된 질문을 grill-knowledge / grill-sync가 여기 박는다)
 ```
 
 (조건부) `docs/knowledge/people.md` 시드 (인물·회사 항목이 ON된 경우):
