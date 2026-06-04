@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+#
+# sync-grill — copy grill-* skill edits from the Cowork plugin cache
+# into the washswat-grill git repo, then commit & push if anything changed.
+#
+# Background:
+#   Cowork edits skills inside its plugin cache (under ~/Library/Application
+#   Support/Claude/...), not inside ~/.claude/skills/.  Our git repo lives at
+#   ~/.claude/skills/.washswat-grill-repo and the 4 grill-* directories under
+#   ~/.claude/skills are symlinks into it.  So edits made through Cowork never
+#   touch the repo — this script bridges that gap.
+#
+# Usage:
+#   sync-grill                       # default commit message
+#   sync-grill "tweak grill-knowledge MT-3 wording"
+#   sync-grill --dry-run             # show diff but don't commit
+#
+set -euo pipefail
+
+REPO="$HOME/.claude/skills/.washswat-grill-repo"
+PLUGIN_ROOT="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin"
+SKILLS=(grill-intake grill-knowledge grill-setup grill-sync)
+
+DRY_RUN=0
+MSG=""
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=1 ;;
+    *) MSG="$arg" ;;
+  esac
+done
+
+if [[ ! -d "$REPO/.git" ]]; then
+  echo "error: $REPO is not a git repo" >&2
+  exit 1
+fi
+
+if [[ ! -d "$PLUGIN_ROOT" ]]; then
+  echo "error: Cowork plugin root not found at $PLUGIN_ROOT" >&2
+  exit 1
+fi
+
+# Find the most recently-touched grill-setup/SKILL.md anywhere under the
+# plugin root, then walk up to its skills/ directory.  Session-ID subdirs
+# can change between Cowork sessions, so we discover the path dynamically.
+LATEST=$(find "$PLUGIN_ROOT" -path "*/skills/grill-setup/SKILL.md" -type f -print0 2>/dev/null \
+  | xargs -0 stat -f '%m %N' 2>/dev/null \
+  | sort -rn \
+  | head -n 1 \
+  | cut -d' ' -f2-)
+
+if [[ -z "${LATEST:-}" ]]; then
+  echo "error: could not locate grill-setup/SKILL.md under $PLUGIN_ROOT" >&2
+  exit 1
+fi
+
+CACHE="$(dirname "$(dirname "$LATEST")")"
+echo "Cowork cache : $CACHE"
+echo "Repo         : $REPO"
+echo
+
+# Copy each grill-* dir from cache → repo.  No --delete: if Cowork's cache
+# happens to be partial mid-write we don't want to drop repo files.
+for s in "${SKILLS[@]}"; do
+  if [[ ! -d "$CACHE/$s" ]]; then
+    echo "warn: $s missing from cache, skipping" >&2
+    continue
+  fi
+  rsync -a "$CACHE/$s/" "$REPO/$s/"
+done
+
+cd "$REPO"
+
+if git diff --quiet && git diff --cached --quiet && [[ -z "$(git status --porcelain)" ]]; then
+  echo "no changes — nothing to commit"
+  exit 0
+fi
+
+echo "Changes:"
+git status --short
+echo
+git --no-pager diff --stat
+
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  echo
+  echo "(dry-run — not committing)"
+  exit 0
+fi
+
+# Default message: list which skills changed.
+if [[ -z "$MSG" ]]; then
+  CHANGED=$(git status --porcelain | awk '{print $2}' | cut -d/ -f1 | sort -u | grep '^grill-' | tr '\n' ' ' | sed 's/ $//')
+  MSG="sync from Cowork cache: ${CHANGED:-update}"
+fi
+
+git add -A
+git commit -m "$MSG"
+git push
